@@ -7,7 +7,25 @@ import AddTask from './AddTask';
 class App extends React.Component {
   state = {
     tasks: [],
-    errorMessage: ''
+    errorMessage: '',
+    view: 'taskList'
+  }
+
+  onViewChange(view){
+    this.setState({view});
+  }
+
+  wrapPage(jsx){
+
+    const { view } = this.state;
+
+    return (
+        <div classname="container">
+          <PageTabs currentView={view}
+                    onViewChange={this.onViewChange.bind(this)}/>
+          {jsx}
+        </div>
+    );
   }
 
   componentDidMount() {
@@ -15,7 +33,7 @@ class App extends React.Component {
   }
 
   getData() {
-    axios.get('http://my-json-server.typicode.com/bnissen24/project2DB/posts')
+    axios.get('http://my-json-server.typicode.com/KingLogar/FakeDB1/posts')
       .then(response => {
         this.setState({ tasks: response.data });
       }).catch(error => {
@@ -40,6 +58,17 @@ class App extends React.Component {
   }
 
   render() {
+    const {view} = this.state;
+
+    switch (view){
+      case 'taskList':
+        return (this.wrapPage(<TaskList />));
+      case 'addTask':
+        return (this.wrapPage(<AddTask />));
+      default:
+        return (this.wrapPage(<TaskList />));
+    }
+
     return (
       <div className="container">
         <AddTask onSubmit={this.onAddTask} />
